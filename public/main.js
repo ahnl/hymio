@@ -17,7 +17,7 @@ let slotsUsed = {
 
 function updateCounts() {
     slotsUsed.still = document.querySelector('#emojiListStill').childElementCount;
-    slotsUsed.animated = document.querySelector('#emojiListAnimated').childElementCount;;
+    slotsUsed.animated = document.querySelector('#emojiListAnimated').childElementCount;
 
     // progress bar
     document.querySelector('#gradientRight').style.width = Math.floor(100 - ((slotsUsed.still + slotsUsed.animated) / (slots.still + slots.animated)) * 100) + '%';
@@ -27,17 +27,16 @@ function updateCounts() {
     document.querySelector('#animatedEmojiSlotsCount').innerHTML = `${slotsUsed.animated} / ${slots.animated}`;
 }
 
-function addEmoji(emoji, target, action, append, includeObject) {
+function addEmoji(emoji, target, action, options) {
     let el = document.createElement('div');
     el.classList.add('emoji');
     el.classList.add(action.icon);
     el.style.backgroundImage = `url('${emoji.url}')`;
-    el.dataset.id = emoji.id;
-    if (includeObject) {
-        el.dataset.emoji = JSON.stringify(emoji);
-    }
+    el.dataset.id = emoji.id;    
     el.onclick = action.func;
-    if (append) {
+
+    if (options.includeObject) el.dataset.emoji = JSON.stringify(emoji);
+    if (options.append) {
         document.querySelector(target).append(el);
     } else {
         document.querySelector(target).prepend(el);
@@ -91,26 +90,28 @@ function addEmojiClick(event) {
 
 function checkNoEmojis() {
     function checkContainer(container, type) {
-//emptyEmojisStill
-        if (document.querySelector(container).children.length == 0) {
-            document.querySelector(container + 'Empty').style.display = 'block';
-            document.querySelector(container).style.display = 'none';
-            if (document.querySelector(container + 'EmptySuggestion').children.length == 0) {
+        let emptyContainer = document.querySelector(".emptyEmojis[data-type='" + type + "']");
+        let suggestionContainer = emptyContainer.querySelector('.emptyEmojisSuggestion');
+        let emojiContainer = document.querySelector(container);
+
+        if (emojiContainer.children.length == 0) {
+            emptyContainer.style.display = 'block';
+            emojiContainer.style.display = 'none';
+            if (suggestionContainer.children.length == 0) {
                 fetch('/api/randomEmoji?type=' + type)
                 .then(response => response.json())
                 .then(data => {
-                    addEmoji(data, container + 'EmptySuggestion', addEmojiAction, false, true);
+                    addEmoji(data, ".emptyEmojis[data-type='" + type + "'] .emptyEmojisSuggestion", addEmojiAction, { includeObject: true });
                 });
             }
-           
         } else {
-            document.querySelector(container + 'Empty').style.display = 'none';
-            document.querySelector(container + 'EmptySuggestion').innerHTML = '';
-            document.querySelector(container).style.display = 'grid';
+            emptyContainer.style.display = 'none';
+            suggestionContainer.innerHTML = '';
+            emojiContainer.style.display = 'grid';
         }
     }
-    checkContainer('#emojiListStill', 'still')
-    checkContainer('#emojiListAnimated', 'animated')
+    checkContainer('#emojiListStill', 'still');
+    checkContainer('#emojiListAnimated', 'animated');
 }
 function renderServerEmojis() {
     fetch('/api/' +key + '/getServerEmojis')
@@ -135,7 +136,7 @@ function renderPublicEmojis(page) {
             return;
         }
         publicEmojis = publicEmojis.concat(data).unique();
-        data.forEach(emoji => addEmoji(emoji, '#emojiListAll', addEmojiAction, true));
+        data.forEach(emoji => addEmoji(emoji, '#emojiListAll', addEmojiAction, { append: true }));
     })
     .catch(reason => {
         throw reason;
