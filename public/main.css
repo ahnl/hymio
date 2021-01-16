@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans&display=swap');
+
+* {
+    font-family: 'PT Sans', sans-serif;
+}
+body {margin: 0;background-color: #fff;}
+
+.header {
+    position: sticky;
+    width: 100%;
+    background: rgba(255,255,255,0.89);
+    backdrop-filter: blur(4px);
+    z-index: 5;
+    top: 0;
+}
+.gradientProgress {
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to left, #fa4949 0%, #f3f376 50%, #2cd338 100%);
+}
+#gradientRight {
+    background: rgba(255,255,255,0.75);
+    height: 8px;
+    float: right;
+    transition: width 0.2s;
+}
+.center {
+    max-width: 840px;
+    margin: 0 auto;
+}
+.smallerCenter {
+    max-width: 770px;
+    margin: 0 auto;
+}
+.emojiContainer {
+    border: 1px solid #E4E4E4;
+    border-radius: 6px;
+}
+.innerPadding {
+    padding: 20px;
+}
+.header .center {
+    margin-top: 50px;
+    padding-bottom: 50px;
+}
+.serverIcon {
+    border-radius: 100%;
+    width: 50px;
+    height: 50px;
+}
+.headerSecondary {
+    color: #707070;
+    font-size: 16px;
+    display: block;
+}
+.headerPrimary {
+    color: #707070;
+    font-size: 36px;
+    display: block;
+
+}
+.headerFlex {
+    display: flex;
+}
+.headerTitle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+.headerTitleContent {
+    margin-left: 25px;
+}
+.headerMeter {
+    text-align: center;
+    margin-left: 50px;
+}
+
+.emojiList {
+    margin-top: 15px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 60px);
+    grid-gap: 10px;
+}
+.emoji {
+    width: 60px;
+    height: 60px;
+    background-size: cover; 
+    border: 1px solid #E4E4E4;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+.emoji:hover:before {
+    content: ' ';
+    background-color: #000;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 4px;
+    opacity: 0.1;
+}
+.emoji.deleteEmojiAction:hover:before {
+    background-color: #FF6961;
+}
+.emoji.deleteEmojiAction:hover:after {
+    content: '\2716';
+    background-color: #FF6961;
+}
+.emoji.addEmojiAction:hover:before {
+    background-color: #77dd77;
+}
+.emoji.addEmojiAction:hover:after {
+    content: '\1F7A4';
+    background-color: #77dd77;
+}
+.emoji:hover:after {
+    content: '?';
+    line-height: 20px;
+    text-align: center;
+    color: white;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    background-color: #111;
+}
+.inlineEmoji {
+    vertical-align: middle;
+}
+.emptyEmojis {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 40px;
+}

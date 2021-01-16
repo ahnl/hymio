@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <title>Hymio - Discord Emoji Manager Bot</title>
+        <link rel="stylesheet" href="/main.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+
+        <div class="header">
+            <div class="gradientProgress">
+                <div id="gradientRight" style="width: 100%"></div>
+            </div> 
+            <div class="center">
+                <div class="headerFlex">
+                    <div class="headerTitle">
+                        <img src="<%=server.icon%>" class="serverIcon">
+                        <div class="headerTitleContent">
+                            <span class="headerSecondary">
+                                You are managing the emojis of
+                            </span>
+                            <span class="headerPrimary">
+                                <%=server.name%>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="headerMeter">
+                        <span class="headerSecondary">
+                            Emoji slots
+                        </span>
+                        <span class="headerPrimary" id="stillEmojiSlotsCount">
+                            ...
+                        </span>
+                    </div>
+                    <div class="headerMeter">
+                        <span class="headerSecondary">
+                            Animated emoji slots
+                        </span>
+                        <span class="headerPrimary" id="animatedEmojiSlotsCount">
+                            ...
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="smallerCenter emojiContainer">
+            <div class="innerPadding">
+                <span class="headerSecondary">
+                    Your current emojis
+                </span>
+                <div class="emptyEmojis" id="emojiListStillEmpty" style="display: none;">
+                    <div class="emptyEmojisSuggestion" id="emojiListStillEmptySuggestion"></div>
+                    <span class="headerSecondary" style="margin-top: 10px;">
+                        No emojis here yet &dash; Here's a suggestion!
+                    </span>
+                </div>
+                <div class="emojiList" id="emojiListStill"></div>
+
+                <span class="headerSecondary">
+                    Your current animated emojis
+                </span>
+                <div class="emptyEmojis" id="emojiListAnimatedEmpty" style="display: none;">
+                    <div class="emptyEmojisSuggestion" id="emojiListAnimatedEmptySuggestion"></div>
+                    <span class="headerSecondary" style="margin-top: 10px;">
+                        No emojis here yet &dash; Here's a suggestion!
+                    </span>
+                </div>
+                <div class="emojiList" id="emojiListAnimated"></div>
+
+                <span class="headerSecondary">
+                    Browse new emojis
+                </span>
+                <div class="emojiList" id="emojiListAll"></div>
+            </div>
+        </div>
+    </body>
+    <script>
+        let slots = {
+            still: <%=server.emojiSlots.still%>,
+            animated: <%=server.emojiSlots.animated%>
+        };
+        let key = '<%=key%>';
+    </script>
+    <script src="/main.js"></script>
+</html>

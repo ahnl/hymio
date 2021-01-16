@@ -1,0 +1,13 @@
+{
+    "guildCreateSuccess": [
+        "Hello %s! <:blobcheer:799409598243012609>",
+        "",
+        "Thank you for adding me on your server %s! I'm Hymio bot and I help adding custom emojis on your server.",
+        "",
+        "Here's your link to access Hymio dashboard:",
+        "http://localhost/dashboard/%s/",
+        "",
+        "To manage dashboard links (revoking, limited access), see `/help` "
+    ],
+    "guildCreateFail": ["Hello %s! An error occured and I couldn't register your server for Hymio. Please try again later."]
+}
