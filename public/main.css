@@ -85,7 +85,9 @@ body {margin: 0;background-color: #fff;}
 .emoji {
     width: 60px;
     height: 60px;
-    background-size: cover; 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
     border: 1px solid #E4E4E4;
     border-radius: 4px;
     display: inline-block;
