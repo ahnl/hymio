@@ -8,13 +8,21 @@ const addEmojiAction = {
 };
 
 let loadedPage = 1;
-let pageEnd = false; // flag for "no more pages"
-let publicEmojis = [];
+let outOfPagesFlag = false; 
 let apiSeed = Math.floor(Math.random() * 5000);
+let query = '';
 let slotsUsed = {
     still: 0,
     animated: 0
 }
+
+document.querySelector('#search').addEventListener('input', (event) => {
+    query = event.target.value;
+    outOfPagesFlag = false;
+    loadedPage = 1;
+    
+    renderPublicEmojis(1, {clear: true});
+})
 
 function countVisibleChildren(selector) {
     return [].slice.call(document.querySelector(selector).children).filter(el => el.dataset.ghost != 'true').length
@@ -160,28 +168,33 @@ function renderServerEmojis() {
     }); 
 }
 
-function renderPublicEmojis(page) {
-    fetch('/api/emojis?seed=' + apiSeed + '&page=' + page)
-    .then(response => response.json())
-    .then(data => {
-        if (data.status && data.status == 'end') {
-            pageEnd = true;
-            console.log('No more pages after ' + loadedPage);
-            return;
-        }
-        publicEmojis = publicEmojis.concat(data).unique();
-        data.forEach(emoji => addEmoji(emoji, '#emojiListAll', addEmojiAction, { append: true, includeObject: true }));
-    })
-    .catch(reason => {
-        throw reason;
-    }); 
+function renderPublicEmojis(page, options = {}) {
+    return new Promise((resolve, reject) => {
+        fetch('/api/emojis?seed=' + apiSeed + '&page=' + page + (query ? '&q=' + query : ''))
+        .then(response => response.json())
+        .then(data => {
+            if (data.status && data.status == 'end') {
+                outOfPagesFlag = true;
+                console.log('No more pages after ' + loadedPage);
+                return;
+            }
+            if (options.clear) document.querySelector('#emojiListAll').innerHTML = '';
+            data.forEach(emoji => addEmoji(emoji, '#emojiListAll', addEmojiAction, { append: true, includeObject: true }));
+            resolve(data.length);
+        })
+        .catch(reason => {
+            reject(reason);
+        }); 
+    });
 }
 
 renderServerEmojis();
 renderPublicEmojis(1);
 
+let infiniteLoadLock = false;
+
 window.addEventListener('scroll', function() {
-    if (pageEnd) return;
+    if (outOfPagesFlag || infiniteLoadLock) return;
     let body = document.body,
     html = document.documentElement;
 
@@ -193,7 +206,10 @@ window.addEventListener('scroll', function() {
     if (height - windowEnd < 700) {
         loadedPage++;
         console.log('Loading page', loadedPage, window.scrollY);
-        renderPublicEmojis(loadedPage);
+        infiniteLoadLock = true;
+        renderPublicEmojis(loadedPage).then(() => {
+            infiniteLoadLock = false;
+        });
     }
 });
 

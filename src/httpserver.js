@@ -17,8 +17,8 @@ app.get('/dashboard/:key/', async function(req, res, next) {
         server: {
             icon: ts.iconURL(),
             name: ts.name,
-            emojiSlots: {
-                animated: 50,
+            emojiSlots: {// hardcoded values for now since i don't understand where to take them
+                animated: 50, 
                 still: 50
             }
         },
@@ -92,6 +92,7 @@ app.get('/api/emojis', async function(req, res) {
     let max = min + itemsPerPage;
 
     let sql = "SELECT `id`, `name`, `url` FROM emojis " + (req.query.q ? "WHERE `name` LIKE :name " : "") + "ORDER BY RAND(:seed) LIMIT :min,:max";
+    // to-do: get rid of the dumbfuck random ordering and make it go random by server order
 
     db.execute(sql, {
         name: (req.query.q ? '%' + req.query.q.toLowerCase() + '%' : ''),
