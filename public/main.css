@@ -47,6 +47,9 @@ body {margin: 0;background-color: #fff;}
     margin-bottom: 15px;
     text-align: center;
 }
+.searchContainer:focus {
+    outline: none;
+}
 .innerPadding {
     padding: 20px;
 }

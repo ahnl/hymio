@@ -18,4 +18,10 @@ async function resolveKey(key) {
     return [ts, writeOnly]
 }
 
-module.exports = { randomKey, resolveKey };
+async function resolveEmoji(id) {
+    let [rows] = await db.execute('SELECT `id`, `name`, `url` FROM emojis WHERE `id`=?', [id]);
+    let row = rows[0];
+    return row;
+}
+
+module.exports = { randomKey, resolveKey, resolveEmoji };

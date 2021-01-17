@@ -1,8 +1,7 @@
 const express = require('express');
-const { resolveKey } = require('./utils');
+const { resolveKey, resolveEmoji } = require('./utils');
 
 const app = express();
-const data = require('../data.json');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'))
@@ -39,6 +38,7 @@ app.get('/api/:key/getServerEmojis', async function(req, res) {
         animated: cleanEmojis(ts.emojis.cache.filter(emoji => emoji.animated))
     });
 });
+
 app.get('/api/:key/deleteEmoji', async function(req, res) {
     if (!req.query.id) {
         res.status(400).json({'status': 'bad request'});
@@ -52,17 +52,20 @@ app.get('/api/:key/deleteEmoji', async function(req, res) {
         console.log('[DISCORD] Couldn\'t delete emoji (' + req.query.id + ') ', reason.message)
     });
 });
+
 app.get('/api/:key/addEmoji', async function(req, res) {
     if (!req.query.id) {
         res.status(400).json({'status': 'bad request'});
         return;
     }
     let [ts] = await resolveKey(req.params.key.trim());
-    let emoji = data.find(e => e.id == req.query.id);
+    let emoji = await resolveEmoji(req.query.id);
+
     if (!emoji) {
         res.status(404).json({'status': 'not found'}); 
         return;
     }
+    emoji.name = emoji.name + '_hymio';
 
     ts.emojis.create(emoji.url, emoji.name).then((resi) => {
         console.log('[DISCORD] Added emoji (' + emoji.name + ')');
@@ -82,30 +85,47 @@ app.get('/api/emojis', async function(req, res) {
         res.status(400).json({'status': 'bad request'});
         return;
     }
+    // ?page=1&seed=1&q=pepe
     let itemsPerPage = 100; /* move this later to somewhere*/
-    let page = req.query.page - 1;
+    let page = parseInt(req.query.page) - 1;
     let min = itemsPerPage * page;
     let max = min + itemsPerPage;
-    let pageData = data.slice(min, max);
-    if (pageData.length > 0) {
-        res.json(pageData);
-    } else {
-        res.json({status: 'end'})
-    }
+
+    let sql = "SELECT `id`, `name`, `url` FROM emojis " + (req.query.q ? "WHERE `name` LIKE :name " : "") + "ORDER BY RAND(:seed) LIMIT :min,:max";
+
+    db.execute(sql, {
+        name: (req.query.q ? '%' + req.query.q.toLowerCase() + '%' : ''),
+        seed: (req.query.seed ? Math.min(parseInt(req.query.seed), 10000) : 1), // max seed is 10000
+        min: min,
+        max: max
+    }).then(([data])=> {
+        if (data.length > 0) {
+            let result = data.map(data => {
+                data.name = data.name + '_hymio';
+                return data;
+            });
+            res.json(result);
+        } else {
+            res.json({status: 'end'}) // no pages left -> send end flag
+        }
+    }).catch(reason => {
+        console.log('[API] Database query failed', reason.message)
+        res.status(500).json({status: 'error'});
+    });
+
 });
 
 app.get('/api/randomEmoji', async function(req, res) {
     let animated = req.query.type == 'animated';
-    let emoji;
     /* Recursively pick more until correct type is found hehe */
-    function chooseEmoji() {
-        emoji = data[Math.floor(Math.random() * data.length)];
-        if ((animated && !emoji.url.includes('.gif')) || (req.query.type && (!animated && emoji.url.includes('.gif')))) {
-            chooseEmoji();
-        } 
+    let [rows] = await db.execute('SELECT `id`, `name`, `url` FROM emojis WHERE `url` ' + (animated ? '' : 'NOT') + ' LIKE \'%.gif%\' ORDER BY RAND() LIMIT 1');
+    let emoji = rows[0];
+
+    if (emoji) {
+        res.json(emoji);
+    } else {
+        res.status(404).json({status: 'error'});
     }
-    chooseEmoji();
-    res.json(emoji);
 });
 
 module.exports = app;

@@ -9,7 +9,7 @@ console.log('Cache length', emojis.cache.length)
 async function main() {
     for (let emoji of emojis.cache) {
         await db.execute('INSERT INTO emojis SET ?', {
-            id: emoji.id,
+            snowflake: emoji.id,
             name: emoji.name,
             url: emoji.url,
             meta: JSON.stringify({

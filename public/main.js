@@ -10,7 +10,7 @@ const addEmojiAction = {
 let loadedPage = 1;
 let pageEnd = false; // flag for "no more pages"
 let publicEmojis = [];
-
+let apiSeed = Math.floor(Math.random() * 5000);
 let slotsUsed = {
     still: 0,
     animated: 0
@@ -36,7 +36,7 @@ const hoverTipEl = document.querySelector('#hoverTip');
 
 function emojiMouseOver(event) {
     hoverTipEl.classList.remove('hiddenHoverTip');
-    hoverTipEl.innerHTML = event.target.dataset.name + '_hymio';
+    hoverTipEl.innerHTML = event.target.dataset.name;
 }
 
 function emojiMouseOut(event) {
@@ -161,7 +161,7 @@ function renderServerEmojis() {
 }
 
 function renderPublicEmojis(page) {
-    fetch('/api/emojis?page=' + page)
+    fetch('/api/emojis?seed=' + apiSeed + '&page=' + page)
     .then(response => response.json())
     .then(data => {
         if (data.status && data.status == 'end') {
