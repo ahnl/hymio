@@ -1,6 +1,6 @@
 const mysql = require('mysql2');
 
-global.config = (process.env.NODE_ENV != 'production' ? require('./config') : require('./config_prod'));
+global.config = (process.env.NODE_ENV != 'PRODUCTION' ? require('./config') : require('./config_prod'));
 
 const discordBot = require('./src/discordBot');
 const httpServer = require('./src/httpServer');
