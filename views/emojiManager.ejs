@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-
+        <div id="hoverTip" class="hiddenHoverTip"></div>
         <div class="header">
             <div class="gradientProgress">
                 <div id="gradientRight" style="width: 100%"></div>
@@ -42,6 +42,9 @@
                 </div>
             </div>
         </div>
+        <div class="smallerCenter">
+            <input type="search" class="searchContainer" placeholder="🔎 Search emojis...">
+        </div>
         <div class="smallerCenter emojiContainer">
             <div class="innerPadding">
                 <!-- still emojis-->
@@ -52,7 +55,7 @@
                     <%- include('components/emptyEmojisContainer.ejs', {type: 'still'}) %>
                     <div class="emojiList" id="emojiListStill"></div>
                 </div>
-
+                <hr class="gap" />
                 <!-- animated emojis -->
                 <div>
                     <span class="headerSecondary">
@@ -61,7 +64,10 @@
                     <%- include('components/emptyEmojisContainer.ejs', {type: 'animated'}) %>
                     <div class="emojiList" id="emojiListAnimated"></div>
                 </div>
-
+            </div>
+        </div>
+        <div class="smallerCenter emojiContainer">
+            <div class="innerPadding">
                 <!-- all emojis -->
                 <div>
                     <span class="headerSecondary">

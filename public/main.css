@@ -35,6 +35,17 @@ body {margin: 0;background-color: #fff;}
 .emojiContainer {
     border: 1px solid #E4E4E4;
     border-radius: 6px;
+    margin-bottom: 15px;
+}
+.searchContainer {
+    border: 1px solid #E4E4E4;
+    border-radius: 6px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    margin: 0;
+    margin-bottom: 15px;
+    text-align: center;
 }
 .innerPadding {
     padding: 20px;
@@ -74,10 +85,12 @@ body {margin: 0;background-color: #fff;}
     text-align: center;
     margin-left: 50px;
 }
-
+.gap {
+    border: none;
+    margin-bottom: 40px;
+}
 .emojiList {
     margin-top: 15px;
-    margin-bottom: 40px;
     display: grid;
     grid-template-columns: repeat(auto-fill, 60px);
     grid-gap: 10px;
@@ -96,10 +109,36 @@ body {margin: 0;background-color: #fff;}
 }
 .emoji[data-action-lock='true'] {
     opacity: 0.3;
-    cursor: wait;
+    cursor: default;
     filter: grayscale(100%);
 }
-.emoji:hover:before {
+
+@keyframes spinner {
+    to {transform: rotate(360deg);}
+  }
+   
+.emoji[data-action-lock='true']:before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: -10px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    border-top-color: #000;
+    animation: spinner .6s linear infinite;
+    background-color: transparent !important;
+}
+
+.emoji[data-action-lock='true']:after {
+    content: none !important;
+}
+
+.emoji:hover:before:not(.emoji[data-action-lock='true']:hover:before) {
     content: ' ';
     background-color: #000;
     position: absolute;
@@ -141,5 +180,23 @@ body {margin: 0;background-color: #fff;}
 .emptyEmojis {
     text-align: center;
     width: 100%;
-    margin-bottom: 40px;
+}
+#hoverTip {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid #E4E4E4;
+    background-color: white;
+    border-radius: 6px;
+    padding: 16px 22px;
+    color: #707070;
+    font-size: 16px;
+    z-index: 100;
+    bottom: 20px;
+    opacity: 1;
+    transition: bottom 0.15s, opacity 0.15s, width 0.15s;
+}
+.hiddenHoverTip {
+    bottom: -5px !important;
+    opacity: 0 !important;
 }

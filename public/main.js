@@ -32,13 +32,28 @@ function updateCounts() {
     document.querySelector('#animatedEmojiSlotsCount').innerHTML = `${slotsUsed.animated} / ${slots.animated}`;
 }
 
+const hoverTipEl = document.querySelector('#hoverTip');
+
+function emojiMouseOver(event) {
+    hoverTipEl.classList.remove('hiddenHoverTip');
+    hoverTipEl.innerHTML = event.target.dataset.name + '_hymio';
+}
+
+function emojiMouseOut(event) {
+    //console.log(event.target.dataset.name)
+    hoverTipEl.classList.add('hiddenHoverTip');
+}
+
 function addEmoji(emoji, target, action, options = {}) {
     let el = document.createElement('div');
     el.classList.add('emoji');
     el.classList.add(action.icon);
     el.style.backgroundImage = `url('${emoji.url}')`;
     el.dataset.id = emoji.id;    
+    el.dataset.name = emoji.name;    
     el.onclick = action.func;
+    el.onmouseover = emojiMouseOver;
+    el.onmouseout = emojiMouseOut;
 
     if (options.includeObject) el.dataset.emoji = JSON.stringify(emoji);
     if (options.append) {
