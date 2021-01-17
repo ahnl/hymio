@@ -8,7 +8,7 @@ console.log('Cache length', emojis.cache.length)
 
 async function main() {
     for (let emoji of emojis.cache) {
-        await db.query('INSERT INTO emojis SET ?', {
+        await db.execute('INSERT INTO emojis SET ?', {
             id: emoji.id,
             name: emoji.name,
             url: emoji.url,

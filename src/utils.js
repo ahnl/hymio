@@ -10,7 +10,7 @@ async function randomKey(bytes) {
 }
 
 async function resolveKey(key) {
-    let [rows] = await db.query('SELECT `id`, `wKey` FROM guilds WHERE `rwKey`=? OR `wKey`=?', [key, key]);
+    let [rows] = await db.execute('SELECT `id`, `wKey` FROM guilds WHERE `rwKey`=? OR `wKey`=?', [key, key]);
     let row = rows[0];
     if (!row) { next(); return; }
     let writeOnly = row.wKey == key;

@@ -12,6 +12,7 @@ const { randomKey } = require('./src/utils');
 const httpserver = require('./src/httpserver');
 
 global.db = mysql.createConnection(config.credentials.mysql).promise(); // promise me baby <3
+global.db.config.namedPlaceholders = true;
 global.client = new Discord.Client();
 
 client.on('ready', async () => {
@@ -26,7 +27,7 @@ function newGuild(guild) {
             rw: await randomKey(32),
             w: await randomKey(32),
         };
-        await db.query('INSERT INTO guilds SET ? ON DUPLICATE KEY UPDATE name = VALUES(`name`), ownerId = VALUES(`ownerId`), ownerTag = VALUES(`ownerTag`), rwKey = VALUES(`rwKey`), wKey = VALUES(`wKey`);', {
+        await db.execute('INSERT INTO guilds SET ? ON DUPLICATE KEY UPDATE name = VALUES(`name`), ownerId = VALUES(`ownerId`), ownerTag = VALUES(`ownerTag`), rwKey = VALUES(`rwKey`), wKey = VALUES(`wKey`);', {
             id: guild.id,
             name: guild.name,
             ownerId: owner.id,
