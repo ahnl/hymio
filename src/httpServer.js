@@ -10,6 +10,10 @@ app.get('/', async function(req, res) {
     res.end();
 });
 
+app.get('/add', async function (req, res) {
+    res.redirect('https://discord.com/oauth2/authorize?client_id=799344765300768808&permissions=1074128960&scope=bot');
+});
+
 app.get('/dashboard/:key/', async function(req, res, next) {
     let [ts, writeOnly] = await resolveKey(req.params.key.trim());
 
@@ -58,7 +62,7 @@ app.get('/api/:key/addEmoji', async function(req, res) {
         res.status(400).json({'status': 'bad request'});
         return;
     }
-    let [ts] = await resolveKey(req.params.key.trim());
+    let [guild] = await resolveKey(req.params.key.trim());
     let emoji = await resolveEmoji(req.query.id);
 
     if (!emoji) {
@@ -67,7 +71,7 @@ app.get('/api/:key/addEmoji', async function(req, res) {
     }
     emoji.name = emoji.name + '_hymio';
 
-    ts.emojis.create(emoji.url, emoji.name).then((resi) => {
+    guild.emojis.create(emoji.url, emoji.name).then((resi) => {
         console.log('[DISCORD] Added emoji (' + emoji.name + ')');
         res.json({'status': 'ok', 'emoji': {
             'id': resi.id, 
