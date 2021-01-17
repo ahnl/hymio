@@ -11,14 +11,8 @@ function newGuild(guild) {
             rw: await randomKey(32),
             w: await randomKey(32),
         };
-        await db.execute('INSERT INTO guilds SET ? ON DUPLICATE KEY UPDATE name = VALUES(`name`), ownerId = VALUES(`ownerId`), ownerTag = VALUES(`ownerTag`), rwKey = VALUES(`rwKey`), wKey = VALUES(`wKey`);', {
-            id: guild.id,
-            name: guild.name,
-            ownerId: owner.id,
-            ownerTag: owner.tag,
-            rwKey: keys.rw,
-            wKey: keys.w
-        }).catch(reason => { reject(reason) });
+        // We used to pass an object with key-value pairs to be inserted, but the namedPlaceholders db configuration option broke it - here's a traditional workaround
+        await db.query('INSERT INTO guilds SET `id` = ?, `name` = ?, `ownerId` = ?, `ownerTag` = ?, `rwKey` = ?, `wKey` = ? ON DUPLICATE KEY UPDATE name = VALUES(`name`), ownerId = VALUES(`ownerId`), ownerTag = VALUES(`ownerTag`), rwKey = VALUES(`rwKey`), wKey = VALUES(`wKey`);', [ guild.id, guild.name, owner.id, owner.tag, keys.rw, keys.w ]).catch(reason => { reject(reason) });
         resolve({keys});
     });
 }
