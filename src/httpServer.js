@@ -10,7 +10,7 @@ app.get('/', async function(req, res) {
     res.end();
 });
 
-app.get('/add', async function (req, res) {
+app.get('/bot', async function (req, res) {
     res.redirect('https://discord.com/oauth2/authorize?client_id=799344765300768808&permissions=1074128960&scope=bot');
 });
 
