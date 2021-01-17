@@ -2,3 +2,4 @@ credentials.json
 oldcrawl/
 node_modules/
 data.json
+tools/dump.json
