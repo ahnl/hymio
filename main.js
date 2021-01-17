@@ -2,8 +2,11 @@ const mysql = require('mysql2');
 const Discord = require('discord.js');
 const fs = require('fs');
 
-const config = {
+global.config = {
     httpPort: 80,
+    ui: {
+        itemsPerPage: 100,
+    },
     credentials: require('./credentials.json')
 }
 

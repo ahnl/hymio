@@ -86,19 +86,17 @@ app.get('/api/emojis', async function(req, res) {
         return;
     }
     // ?page=1&seed=1&q=pepe
-    let itemsPerPage = 100; /* move this later to somewhere*/
+    
     let page = parseInt(req.query.page) - 1;
-    let min = itemsPerPage * page;
-    let max = min + itemsPerPage;
 
-    let sql = "SELECT `id`, `name`, `url` FROM emojis " + (req.query.q ? "WHERE `name` LIKE :name " : "") + "ORDER BY RAND(:seed) LIMIT :min,:max";
+    let sql = "SELECT `id`, `name`, `url` FROM emojis " + (req.query.q ? "WHERE `name` LIKE :name " : "") + "ORDER BY RAND(:seed) LIMIT :limit OFFSET :offset";
     // to-do: get rid of the dumbfuck random ordering and make it go random by server order
 
     db.execute(sql, {
         name: (req.query.q ? '%' + req.query.q.toLowerCase() + '%' : ''),
         seed: (req.query.seed ? Math.min(parseInt(req.query.seed), 10000) : 1), // max seed is 10000
-        min: min,
-        max: max
+        offset: config.ui.itemsPerPage * page,
+        limit: config.ui.itemsPerPage
     }).then(([data])=> {
         if (data.length > 0) {
             let result = data.map(data => {
