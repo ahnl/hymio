@@ -94,6 +94,11 @@ body {margin: 0;background-color: #fff;}
     position: relative;
     cursor: pointer;
 }
+.emoji[data-action-lock='true'] {
+    opacity: 0.3;
+    cursor: wait;
+    filter: grayscale(100%);
+}
 .emoji:hover:before {
     content: ' ';
     background-color: #000;

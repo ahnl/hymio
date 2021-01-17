@@ -10,14 +10,19 @@ const addEmojiAction = {
 let loadedPage = 1;
 let pageEnd = false; // flag for "no more pages"
 let publicEmojis = [];
+
 let slotsUsed = {
     still: 0,
     animated: 0
 }
 
+function countVisibleChildren(selector) {
+    return [].slice.call(document.querySelector(selector).children).filter(el => el.dataset.ghost != 'true').length
+}
+
 function updateCounts() {
-    slotsUsed.still = document.querySelector('#emojiListStill').childElementCount;
-    slotsUsed.animated = document.querySelector('#emojiListAnimated').childElementCount;
+    slotsUsed.still = countVisibleChildren('#emojiListStill');
+    slotsUsed.animated = countVisibleChildren('#emojiListAnimated');
 
     // progress bar
     document.querySelector('#gradientRight').style.width = Math.floor(100 - ((slotsUsed.still + slotsUsed.animated) / (slots.still + slots.animated)) * 100) + '%';
@@ -27,7 +32,7 @@ function updateCounts() {
     document.querySelector('#animatedEmojiSlotsCount').innerHTML = `${slotsUsed.animated} / ${slots.animated}`;
 }
 
-function addEmoji(emoji, target, action, options) {
+function addEmoji(emoji, target, action, options = {}) {
     let el = document.createElement('div');
     el.classList.add('emoji');
     el.classList.add(action.icon);
@@ -42,15 +47,25 @@ function addEmoji(emoji, target, action, options) {
         document.querySelector(target).prepend(el);
     }
     updateCounts();
+
+    return el;
 }
 
-function deleteEmojiClick(event) {
-    event.target.style.display = 'none';
+async function deleteEmojiClick(event) {
+    if (event.target.dataset.actionLock == 'true') return;
+    event.target.dataset.actionLock = 'true';
+    event.target.dataset.ghost = 'true';
+    updateCounts();
+    
     fetch('/api/' +key + '/deleteEmoji?id=' + event.target.dataset.id)
-    .then(response => {
-        event.target.parentNode.removeChild(event.target);
-        updateCounts();
-        checkNoEmojis();
+    .then(async (data) => {
+        data = await data.json();
+        if (data.status != 'ok') {
+            throw 'Status not ok: ' + data.status;
+        } else {
+            event.target.parentNode.removeChild(event.target);
+            checkNoEmojis();
+        }
     })
     .catch(reason => {
         event.target.style.display = 'inline-block';
@@ -61,25 +76,29 @@ function deleteEmojiClick(event) {
 
 function addEmojiClick(event) {
     // [].slice.call(document.querySelector('#emojiListStill').children).map(el => el.dataset.id)
-    let emoji = publicEmojis.find(e => e.id == event.target.dataset.id);
-    if (!emoji) {
-        emoji = JSON.parse(event.target.dataset.emoji);
-    }
+    let emoji = JSON.parse(event.target.dataset.emoji);
     let animated = emoji.url.includes('.gif');
     if ((animated && slotsUsed.animated >= slots.animated) || (!animated && slotsUsed.still >= slots.still)) {
         alert((animated ? 'Animated emoji' : 'Emoji') + ' slots are full!\n\nYou need to free up some emoji slots first before adding more.');
         return;
     }
-    event.target.style.display = 'none';
-    
+
+    event.target.parentNode.removeChild(event.target);
+    let targetSelector = (animated ? '#emojiListAnimated' : '#emojiListStill');
+    let el = addEmoji(emoji, targetSelector, deleteEmojiAction);
+    el.dataset.actionLock = 'true'; // don't allow any actions before unlocked
+    updateCounts();
+    checkNoEmojis();
+
     fetch('/api/' +key + '/addEmoji?id=' + event.target.dataset.id)
     .then(async (data) => {
         data = await data.json();
-        event.target.parentNode.removeChild(event.target);
-        let target = (data.emoji.animated ? '#emojiListAnimated' : '#emojiListStill');
-        addEmoji(data.emoji, target, deleteEmojiAction);
-        updateCounts();
-        checkNoEmojis();
+        if (data.status != 'ok') {
+            throw 'Status not ok';
+        } else {
+            el.dataset.actionLock = 'false'; 
+            el.dataset.id = data.emoji.id;
+        }
     })
     .catch(reason => {
         event.target.style.display = 'inline-block';
@@ -136,7 +155,7 @@ function renderPublicEmojis(page) {
             return;
         }
         publicEmojis = publicEmojis.concat(data).unique();
-        data.forEach(emoji => addEmoji(emoji, '#emojiListAll', addEmojiAction, { append: true }));
+        data.forEach(emoji => addEmoji(emoji, '#emojiListAll', addEmojiAction, { append: true, includeObject: true }));
     })
     .catch(reason => {
         throw reason;

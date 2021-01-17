@@ -46,7 +46,10 @@ app.get('/api/:key/deleteEmoji', async function(req, res) {
     }
     let [ts] = await resolveKey(req.params.key.trim());
     ts.emojis.resolve(req.query.id).delete('deleted on hymio management panel').then(() => {
+        console.log('[DISCORD] Deleted emoji (' + req.query.id + ')')
         res.json({'status': 'ok'});
+    }).catch(reason => {
+        console.log('[DISCORD] Couldn\'t delete emoji (' + req.query.id + ') ', reason.message)
     });
 });
 app.get('/api/:key/addEmoji', async function(req, res) {
@@ -56,14 +59,21 @@ app.get('/api/:key/addEmoji', async function(req, res) {
     }
     let [ts] = await resolveKey(req.params.key.trim());
     let emoji = data.find(e => e.id == req.query.id);
-    console.log('Adding emoji', emoji);
+    if (!emoji) {
+        res.status(404).json({'status': 'not found'}); 
+        return;
+    }
+
     ts.emojis.create(emoji.url, emoji.name).then((resi) => {
+        console.log('[DISCORD] Added emoji (' + emoji.name + ')');
         res.json({'status': 'ok', 'emoji': {
             'id': resi.id, 
             'animated': resi.animated,
             'url': emoji.url, 
             'name': resi.name
         }});
+    }).catch(reason => {
+        console.log('[DISCORD] Couldn\'t add emoji (' + emoji.name + ') ', reason.message)
     });
 });
 
