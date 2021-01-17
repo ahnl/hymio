@@ -3,3 +3,4 @@ oldcrawl/
 node_modules/
 data.json
 tools/dump.json
+config_prod.js

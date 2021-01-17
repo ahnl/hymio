@@ -5,7 +5,7 @@
         "Thank you for adding me on your server %s! I'm Hymio bot and I help adding custom emojis on your server.",
         "",
         "Here's your link to access Hymio dashboard:",
-        "http://localhost/dashboard/%s/",
+        "%s",
         "",
         "To manage dashboard links (revoking, limited access), see `/help` "
     ],

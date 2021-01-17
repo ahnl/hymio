@@ -6,14 +6,15 @@
   "dependencies": {
     "ejs": "^3.1.5",
     "discord.js": "^12.5.1",
-    "discord.js-selfbot": "^12.0.2",
     "express": "^4.17.1",
     "mysql2": "^2.2.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "discord.js-selfbot": "^12.0.2",
+    "nodemon": "^2.0.7"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "ahnl",
-  "license": "MIT"
+  "author": "ahnl"
 }
